@@ -12,8 +12,12 @@ ISBN: https://en.wikipedia.org/wiki/ISBN
 
 N.B.: Access to the WorldCat API requires authentication which needs to be acquired beforehand. This will provide a key and secret code that needs to be put in a config.yml file for both scripts. Such a file looks like:
 
-key: ... 
+key: ...
+
 secret: ...
+
 auth_url: https://oauth.oclc.org/auth
+
 token_url: https://oauth.oclc.org/token
+
 worldcat_api_url: https://americas.discovery.api.oclc.org/worldcat/search/v2
