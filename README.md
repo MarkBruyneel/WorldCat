@@ -9,3 +9,5 @@ The second script uses the same excel file but where ISBN codes are not availabl
 WorldCat search API: https://developer.api.oclc.org/wcv2
 
 ISBN: https://en.wikipedia.org/wiki/ISBN
+
+N.B.: Access to the WorldCat API requires authentication which needs to be acquired beforehand
