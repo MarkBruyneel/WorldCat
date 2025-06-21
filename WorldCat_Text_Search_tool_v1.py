@@ -140,7 +140,8 @@ def main():
     Publications['Word_count'] = [len(c) for c in Publications['Filename_copy']]
     # Remove columns that only have one word left
     Publications = Publications[Publications['Word_count'] > 2]
-    # Remove columns that only have more than 10 words
+    # Remove columns that only have more than 10 words 
+    # The chances of matches with that many words are very rare as titles are not usually that long
     Publications = Publications[Publications['Word_count'] < 11]
 
     # Rename column names for easier understanding
@@ -148,7 +149,7 @@ def main():
 
     Publications.to_csv(f'U:\Werk\OWO\AIP\WC_test\\Test_text_search_data.txt', sep='\t', encoding='utf-16')
 
-    # Make a list of the ISBN codes that need to be looked up based on the Excel file
+    # Make a list of the word lists that need to be looked up based on the file names in the Excel file
     Word_lists_original = Publications['Word_list'].tolist()
     years_list_original = Publications['Publication_year'].tolist()
     Material_ID_list = Publications['Material id'].tolist()
@@ -176,12 +177,12 @@ def main():
     # Create an output folder if it doesn't exist
     Path('U:\Werk\OWO\AIP\Output').mkdir(parents=True, exist_ok=True)
 
-    # Use this example ISBN list to get information from WorldCat
+    # Use this list to get information from WorldCat
     WC_text_Book_Table = pd.DataFrame()
 
     No_of_strings = len(search_string_list) - 1
     Nr_of_strings = len(search_string_list)
-    # Get WorldCat Records for each ISBN in the list
+    # Get WorldCat Records for each word list (= search string now) in the list
     listitem = 0
     while listitem < No_of_strings:
         try:
@@ -290,7 +291,10 @@ def main():
     WC_text_Book_Table["Search_MID"] = WC_text_Book_Table["Search_MID"].astype(np.int64)
     WC_text_Book_Table.to_csv(f'U:\Werk\OWO\AIP\WC_test\WorldCat_Text_Book_list_' + runday + '.txt', sep='\t',
                               encoding='utf-8')
-
+           
+    # Because of a bug in the WorldCat API (reported it) I need to retrieve some edition
+    # information from the saved Json files. This concerns publication years and edition information
+           
     # Read Json files
     # Establish location and files with data. Put the filenames in a table
     # and add the date in the file name as data for a column
