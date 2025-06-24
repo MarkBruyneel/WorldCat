@@ -54,14 +54,14 @@ runyear = str(datetime.today().year)
 now = str(datetime.now())
 nowt = time.time()
 
-logger.add(r'U:\Werk\OWO\AIP\AIP_WC_Text_Search_test.log', backtrace=True, diagnose=True, rotation="10 MB",
+logger.add(r'U:\Werk\OWO\WC_Text_Search_test.log', backtrace=True, diagnose=True, rotation="10 MB",
            retention="12 months")
 
 
 @logger.catch()
 def main():
     # Get configuration information to connect to WorldCat Search API
-    with open('U:\Werk\OWO\AIP\WC_Search_config.yml', 'r') as stream:
+    with open('U:\Werk\OWO\WC_Search_config.yml', 'r') as stream:
         config = yaml.safe_load(stream)
 
     serviceURL = config.get('worldcat_api_url')
@@ -71,13 +71,13 @@ def main():
     wskey = OAuth2Session(client=client)
 
     # create download folder if it doesn't exist
-    Path("U:\Werk\OWO\AIP\WC_test").mkdir(parents=True, exist_ok=True)
+    Path("U:\Werk\OWO\WC_test").mkdir(parents=True, exist_ok=True)
 
     # create a backup folder with the json files from last time and do the backup
-    Path(f"U:\Werk\OWO\AIP\WC_test\\tbackup_{runday}").mkdir(parents=True, exist_ok=True)
-    sourcepath = (f"U:\Werk\OWO\AIP\WC_test")
+    Path(f"U:\Werk\OWO\WC_test\\tbackup_{runday}").mkdir(parents=True, exist_ok=True)
+    sourcepath = (f"U:\Werk\OWO\WC_test")
     sourcefiles = os.listdir(sourcepath)
-    destinationpath = (f"U:\Werk\OWO\AIP\WC_test\\tbackup_{runday}")
+    destinationpath = (f"U:\Werk\OWO\WC_test\\tbackup_{runday}")
     for file in sourcefiles:
         if file.endswith(".json"):
             shutil.move(os.path.join(sourcepath, file), os.path.join(destinationpath, file))
@@ -140,14 +140,14 @@ def main():
     Publications['Word_count'] = [len(c) for c in Publications['Filename_copy']]
     # Remove columns that only have one word left
     Publications = Publications[Publications['Word_count'] > 2]
-    # Remove columns that only have more than 10 words 
+    # Remove columns that only have more than 10 words
     # The chances of matches with that many words are very rare as titles are not usually that long
     Publications = Publications[Publications['Word_count'] < 11]
 
     # Rename column names for easier understanding
     Publications = Publications.rename(columns={'Filename_copy': 'Word_list', 'Filename_copy_year': 'Publication_year'})
 
-    Publications.to_csv(f'U:\Werk\OWO\AIP\WC_test\\Test_text_search_data.txt', sep='\t', encoding='utf-16')
+    Publications.to_csv(f'U:\Werk\OWO\WC_test\\Test_text_search_data.txt', sep='\t', encoding='utf-16')
 
     # Make a list of the word lists that need to be looked up based on the file names in the Excel file
     Word_lists_original = Publications['Word_list'].tolist()
@@ -175,7 +175,7 @@ def main():
     print('Search strings: ', search_string_list, '\n')
     # Next step is to use the data to search and download records
     # Create an output folder if it doesn't exist
-    Path('U:\Werk\OWO\AIP\Output').mkdir(parents=True, exist_ok=True)
+    Path('U:\Werk\OWO\Output').mkdir(parents=True, exist_ok=True)
 
     # Use this list to get information from WorldCat
     WC_text_Book_Table = pd.DataFrame()
@@ -197,7 +197,7 @@ def main():
                 r.raise_for_status()
                 response = r.json()
                 # keep json as backup
-                with open(f'U:\Werk\OWO\AIP\WC_test/{Material_ID_list[listitem]}.json', 'w') as f:
+                with open(f'U:\Werk\OWO\WC_test/{Material_ID_list[listitem]}.json', 'w') as f:
                     f.write(json.dumps(response))
                 # Process data in downloaded files
                 BookListPublisher = []
@@ -289,16 +289,16 @@ def main():
 
     # Turn key Search_MID into int64 for later merge & Export end result
     WC_text_Book_Table["Search_MID"] = WC_text_Book_Table["Search_MID"].astype(np.int64)
-    WC_text_Book_Table.to_csv(f'U:\Werk\OWO\AIP\WC_test\WorldCat_Text_Book_list_' + runday + '.txt', sep='\t',
+    WC_text_Book_Table.to_csv(f'U:\Werk\OWO\WC_test\WorldCat_Text_Book_list_' + runday + '.txt', sep='\t',
                               encoding='utf-8')
-           
+
     # Because of a bug in the WorldCat API (reported it) I need to retrieve some edition
     # information from the saved Json files. This concerns publication years and edition information
-           
+
     # Read Json files
     # Establish location and files with data. Put the filenames in a table
     # and add the date in the file name as data for a column
-    path = 'U:\Werk\OWO\AIP\WC_test'
+    path = 'U:\Werk\OWO\WC_test'
 
     # Get list of all files only in the given directory
     oclist = lambda x: os.path.isfile(os.path.join(path, x))
@@ -321,7 +321,7 @@ def main():
     old_substring = ".json"
     new_substring = ""
     result = list(map(lambda s: s.replace(old_substring, new_substring), failed_return))
-    file = open('U:\Werk\OWO\AIP\WC_test\MaterialID_files_not_found.txt', 'w')
+    file = open('U:\Werk\OWO\WC_test\MaterialID_files_not_found.txt', 'w')
     for item in result:
         file.write(item + ", ")
     file.close()
@@ -339,7 +339,7 @@ def main():
     i = 0
     while i != Recnr:
         logger.debug(f'Copying and adding data from ' + OCR_list.File_name[i])
-        f = open(f'U:\Werk\OWO\AIP\WC_test\\{OCR_list.File_name[i]}', 'r')
+        f = open(f'U:\Werk\OWO\WC_test\\{OCR_list.File_name[i]}', 'r')
         # returns JSON object as a dicionary
         data = json.load(f)
         # Iterating through the json list to get specific items
@@ -381,7 +381,7 @@ def main():
         i = i + 1
 
     # Export result as a CSV file with the date of the Python run
-    OCLC_Rec_data.to_csv(f'U:\Werk\OWO\AIP\WC_test\\Text_search_OCLC_Rec_data.csv', encoding='utf-8')
+    OCLC_Rec_data.to_csv(f'U:\Werk\OWO\WC_test\\Text_search_OCLC_Rec_data.csv', encoding='utf-8')
 
     # Merge the OCLC data with the API data into a single file on OCLC numbers
     WorldCat_Book_Data_full = pd.merge(WC_text_Book_Table, OCLC_Rec_data, on=['OCLC_nr'])
@@ -414,7 +414,7 @@ def main():
     # Compare fields Title_copy and Filename_copy and generate a new column ratio with the result
     WorldCat_data_word_search['ratio'] = WorldCat_data_word_search[['Filename_copy', 'Title_copy']].apply(lambda x: SequenceMatcher(lambda y: y == " ", x[0], x[1]).ratio(), axis=1)
 
-    WorldCat_data_word_search.to_csv(f'U:\Werk\OWO\AIP\WC_test\\WorldCat_data_word_search.txt', sep='\t', encoding='utf-8')
+    WorldCat_data_word_search.to_csv(f'U:\Werk\OWO\WC_test\\WorldCat_data_word_search.txt', sep='\t', encoding='utf-8')
 
     # Logging of script run:
     end = str(datetime.now())
