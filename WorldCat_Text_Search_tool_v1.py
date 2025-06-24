@@ -1,4 +1,4 @@
-# Publishers tool to be able to augment AIP data from Canvas with
+# Publishers tool to be able to augment data with
 # publisher data from WorldCat using the OCLC Discovery API
 # This tool uses words from the filename (and publisher) as a basis for text-based searches
 # Author: Mark Bruyneel
