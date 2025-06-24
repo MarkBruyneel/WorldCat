@@ -37,12 +37,12 @@ runyear = str(datetime.today().year)
 now = str(datetime.now())
 nowt = time.time()
 
-logger.add(r'U:\Werk\OWO\AIP\AIP_WC_Publisher_Search_test.log', backtrace=True, diagnose=True, rotation="10 MB", retention="12 months")
+logger.add(r'U:\Werk\OWO\WC_Publisher_Search_test.log', backtrace=True, diagnose=True, rotation="10 MB", retention="12 months")
 @logger.catch()
 
 def main():
     # Get configuration information to connect to WorldCat Search API
-    with open('U:\Werk\OWO\AIP\WC_Search_config.yml', 'r') as stream:
+    with open('U:\Werk\OWO\WC_Search_config.yml', 'r') as stream:
         config = yaml.safe_load(stream)
 
     serviceURL = config.get('worldcat_api_url')
@@ -52,13 +52,13 @@ def main():
     wskey = OAuth2Session(client=client)
 
     # create download folder if it doesn't exist
-    Path("U:\Werk\OWO\AIP\WC_test").mkdir(parents=True, exist_ok=True)
+    Path("U:\Werk\OWO\WC_test").mkdir(parents=True, exist_ok=True)
 
     # create a backup folder with the json files from last time and do the backup
-    Path(f"U:\Werk\OWO\AIP\WC_test\\backup_{runday}").mkdir(parents=True, exist_ok=True)
-    sourcepath = (f"U:\Werk\OWO\AIP\WC_test")
+    Path(f"U:\Werk\OWO\WC_test\\backup_{runday}").mkdir(parents=True, exist_ok=True)
+    sourcepath = (f"U:\Werk\OWO\WC_test")
     sourcefiles = os.listdir(sourcepath)
-    destinationpath = (f"U:\Werk\OWO\AIP\WC_test\\backup_{runday}")
+    destinationpath = (f"U:\Werk\OWO\WC_test\\backup_{runday}")
     for file in sourcefiles:
         if file.endswith(".json"):
             shutil.move(os.path.join(sourcepath, file), os.path.join(destinationpath, file))
@@ -136,7 +136,7 @@ def main():
     print(f'\n Number of valid ISBN codes: {valid_isbn}\n')
 
     # Create an output folder if it doesn't exist
-    Path('U:\Werk\OWO\AIP\Output').mkdir(parents=True, exist_ok=True)
+    Path('U:\Werk\OWO\Output').mkdir(parents=True, exist_ok=True)
 
     # Use this example ISBN list to get information from WorldCat
     Publisher_Book_Table = pd.DataFrame()
@@ -153,7 +153,7 @@ def main():
                 r.raise_for_status()
                 response = r.json()
                 # keep json as backup
-                with open(f'U:\Werk\OWO\AIP\WC_test/{vISBN_list[listitem]}.json', 'w') as f:
+                with open(f'U:\Werk\OWO\WC_test/{vISBN_list[listitem]}.json', 'w') as f:
                     f.write(json.dumps(response))
                 # Process data in downloaded files
                 BookListPublisher = []
@@ -241,20 +241,20 @@ def main():
         listitem = listitem + 1
 
     # Export end result
-    Publisher_Book_Table.to_csv(f'U:\Werk\OWO\AIP\WC_test\WorldCat_Book_list_' + runday + '.txt', sep='\t',
+    Publisher_Book_Table.to_csv(f'U:\Werk\OWO\WC_test\WorldCat_Book_list_' + runday + '.txt', sep='\t',
                                 encoding='utf-8')
 
     # Create an abbreviated table with just ISBN numbers and duplicates removed
     Publisher_Book_Table_abb = Publisher_Book_Table.copy()
     Publisher_Book_Table_abb = Publisher_Book_Table_abb.drop(['OCLC_nr'], axis=1)
     Publisher_Book_Table_abb = Publisher_Book_Table_abb.drop_duplicates()
-    Publisher_Book_Table_abb.to_csv(f'U:\Werk\OWO\AIP\WC_test\WorldCat_Book_list_abb_' + runday + '.txt', sep='\t',
+    Publisher_Book_Table_abb.to_csv(f'U:\Werk\OWO\WC_test\WorldCat_Book_list_abb_' + runday + '.txt', sep='\t',
                                     encoding='utf-8')
 
     # Read Json files
     # Establish location and files with data. Put the filenames in a table
     # and add the date in the file name as data for a column
-    path = 'U:\Werk\OWO\AIP\WC_test'
+    path = 'U:\Werk\OWO\WC_test'
 
     # Get list of all files only in the given directory
     oclist = lambda x: os.path.isfile(os.path.join(path, x))
@@ -277,7 +277,7 @@ def main():
     old_substring = ".json"
     new_substring = ""
     result = list(map(lambda s: s.replace(old_substring, new_substring), failed_return))
-    file = open('U:\Werk\OWO\AIP\WC_test\ISBNs_not_found.txt', 'w')
+    file = open('U:\Werk\OWO\WC_test\ISBNs_not_found.txt', 'w')
     for item in result:
         file.write(item + ", ")
     file.close()
@@ -295,7 +295,7 @@ def main():
     i = 0
     while i != Recnr:
         logger.debug(f'Copying and adding data from ' + OCR_list.File_name[i])
-        f = open(f'U:\Werk\OWO\AIP\WC_test\\{OCR_list.File_name[i]}', 'r')
+        f = open(f'U:\Werk\OWO\WC_test\\{OCR_list.File_name[i]}', 'r')
         # returns JSON object as a dicionary
         data = json.load(f)
         # Iterating through the json list to get specific items
@@ -337,7 +337,7 @@ def main():
         i = i + 1
 
     # Export result as a CSV file with the date of the Python run
-    OCLC_Rec_data.to_csv(f'U:\Werk\OWO\AIP\WC_test\\OCLC_Rec_data.csv', encoding='utf-8')
+    OCLC_Rec_data.to_csv(f'U:\Werk\OWO\WC_test\\OCLC_Rec_data.csv', encoding='utf-8')
 
     # Merge the OCLC data with the API data into a single file on OCLC numbers
     WorldCat_Book_Data_full = pd.merge(Publisher_Book_Table, OCLC_Rec_data, on=['OCLC_nr'])
@@ -347,7 +347,7 @@ def main():
     WorldCat_Book_Data = WorldCat_Book_Data[WorldCat_Book_Data.Publication_Date != "uuuu"]
     WorldCat_Book_Data = WorldCat_Book_Data.drop_duplicates()
     WorldCat_Book_Data['OCLC_Link'] = 'https://vu.on.worldcat.org/search?queryString=' + WorldCat_Book_Data['OCLC_nr']
-    WorldCat_Book_Data.to_csv(f'U:\Werk\OWO\AIP\WC_test\\WorldCat_All_Editions_data.txt', sep='\t', encoding='utf-8')
+    WorldCat_Book_Data.to_csv(f'U:\Werk\OWO\WC_test\\WorldCat_All_Editions_data.txt', sep='\t', encoding='utf-8')
 
     # Logging of script run:
     end = str(datetime.now())
