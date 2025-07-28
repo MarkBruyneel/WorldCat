@@ -144,6 +144,13 @@ def main():
     # Get WorldCat Records for each ISBN in the list
     listitem = 0
     while listitem < valid_isbn:
+        BookListPublisher = []
+        ISBN1_book = []
+        ISBN2_book = []
+        holding = []
+        oclcNumber = []
+        author = []
+        title = []
         try:
             token = wskey.fetch_token(token_url=config.get('token_url'), auth=auth)
             try:
@@ -155,15 +162,6 @@ def main():
                 # keep json as backup
                 with open(f'U:\Werk\OWO\WC_test/{vISBN_list[listitem]}.json', 'w') as f:
                     f.write(json.dumps(response))
-                # Process data in downloaded files
-                BookListPublisher = []
-                ISBN1_book = []
-                ISBN2_book = []
-                holding = []
-                oclcNumber = []
-                author = []
-                title = []
-
                 # To get all data for every edition
                 nrRecords = len(response['briefRecords'])
                 recno = 0
