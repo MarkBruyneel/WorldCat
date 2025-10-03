@@ -66,7 +66,7 @@ def main():
     # Provide the file name and location for which to look up data
     excelfile = input('Please provide the location and name of the Excel file.\nExample: C:\\temp\keyword_list.xlsx \n')
     sh_name = input('Please provide the exact sheet name that has the ISBN column: \n')
-    Pubs = pd.read_excel(f'{excelfile}', sheet_name=sh_name)
+    Pubs = pd.read_excel(f'{excelfile}', sheet_name=sh_name, converters={'ISBN':str})
     # Keep part of the list with essential data:
     Publication_list = Pubs[['ISBN', 'Publisher']].copy()
 
@@ -364,3 +364,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
